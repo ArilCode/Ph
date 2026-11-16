@@ -227,9 +227,10 @@
         payload.screen = screen.width + 'x' + screen.height;
         payload.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-        const { data, error } = await sb.from('submissions').insert(payload).select('id').single();
-        if (error) throw error;
-        rowId = data.id;
+        const newId = crypto.randomUUID();
+const { error } = await sb.from('submissions').insert({ id: newId, ...payload });
+if (error) throw error;
+rowId = newId;
       } else {
         const { error } = await sb.from('submissions').update(payload).eq('id', rowId);
         if (error) throw error;
