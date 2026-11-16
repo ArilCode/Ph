@@ -1,7 +1,7 @@
 // Ganti dengan milik Anda: Supabase → Project Settings → API
 window.CONFIG = {
-  SUPABASE_URL: 'https://GANTI-PROJECT-REF.supabase.co',
-  SUPABASE_ANON_KEY: 'GANTI-ANON-KEY',
+  SUPABASE_URL: 'https://orwpvwdcoocleqdzyjud.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_L8NzCBztaILG13khYalMnA_dE7ADYB5',
   
   // Tampilan web 1
   BRAND: 'SecureID',
@@ -12,3 +12,5 @@ window.CONFIG = {
   REDIRECT_URL: 'https://www.instagram.com/',
   REDIRECT_DELAY: 2500
 };
+
+
