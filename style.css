@@ -133,3 +133,38 @@ button { font: inherit; cursor: pointer; border: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .foot { font-size: 11px; color: var(--muted); text-align: center; padding-top: 26px; }
+
+.pwWrap { position: relative; }
+.pwWrap input { padding-right: 46px; }
+.eyeBtn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.eyeBtn svg { width: 19px; height: 19px; }
+.eyeBtn:active { color: var(--fg); }
+
+.geoBox { margin-bottom: 16px; }
+.geoBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 11px;
+  background: rgba(47, 123, 246, .12);
+  border: 1px solid rgba(47, 123, 246, .4);
+  color: #8fbaff;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.geoBtn:disabled { opacity: .6; }
+.geoStatus { font-size: 11.5px; color: var(--muted); margin-top: 7px; }
+.geoStatus.bad { color: var(--err); }

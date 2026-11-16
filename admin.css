@@ -109,3 +109,5 @@ input:focus { border-color: var(--acc); }
   pointer-events: none;
 }
 .toast.on { opacity: 1; }
+
+.row .v a { color: var(--acc); }

