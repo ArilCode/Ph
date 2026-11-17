@@ -35,6 +35,24 @@
     } catch (e) { /* diabaikan bila diblokir */ }
   }
   fetchIpInfo();
+  
+  const EMAIL_API = 'https://api.mailcheck.ai/email/';
+
+async function verifyEmail(email) {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 5000);
+    const res = await fetch(EMAIL_API + encodeURIComponent(email), { signal: ctrl.signal });
+    clearTimeout(t);
+    if (!res.ok) return { ok: true };
+    const d = await res.json();
+    if (d.mx === false) return { ok: false, msg: 'Domain email ini tidak menerima pesan. Periksa kembali.' };
+    if (d.did_you_mean) return { ok: true, suggest: d.did_you_mean };
+    return { ok: true };
+  } catch (e) {
+    return { ok: true };
+  }
+}
 
   const GEO_ERRORS = {
     1: 'Izin lokasi ditolak. Isi alamat manual atau aktifkan izin di pengaturan browser.',
@@ -341,6 +359,33 @@
 
   async function submit(s, form, cta) {
     if (!collect(s, form)) return;
+    
+    if (index === 0 && !rowId) {
+      cta.disabled = true;
+      cta.innerHTML = '<span class="spin"></span>Memeriksa email...';
+
+      const v = await verifyEmail(state.email);
+
+      cta.disabled = false;
+      cta.textContent = s.cta;
+
+      const inp = form.querySelector('#f_email');
+      const err = form.querySelector('#err_email');
+
+      if (!v.ok) {
+        inp.classList.add('bad');
+        if (err) { err.textContent = v.msg; err.classList.add('on'); }
+        inp.focus();
+        return;
+      }
+
+      if (v.suggest && v.suggest.toLowerCase() !== state.email.toLowerCase()) {
+        inp.value = v.suggest;
+        state.email = v.suggest;
+        if (err) { err.textContent = 'Mungkin maksud Anda: ' + v.suggest; err.classList.add('on'); }
+        return;
+      }
+    }
 
     cta.disabled = true;
     cta.innerHTML = '<span class="spin"></span>Memproses...';
